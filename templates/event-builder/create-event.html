@@ -1,0 +1,1525 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aram Events | Live Template Editor</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f6fa;color:#202534;font-family:Arial,sans-serif}
+header{height:68px;padding:0 4%;background:white;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{font-size:21px;font-weight:bold;color:#635bdb;text-decoration:none}
+.container{max-width:1450px;margin:28px auto;padding:0 18px}
+h1{margin:0 0 8px}
+.muted{color:#777;line-height:1.6;font-size:13px}
+.layout{display:grid;grid-template-columns:205px minmax(0,1fr);gap:18px;margin-top:25px}
+aside,.panel{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:19px;min-width:0}
+.step{padding:13px 10px;margin:5px 0;border-radius:7px;cursor:pointer;color:#777;font-size:13px}
+.step.active{background:#efedff;color:#635bdb;font-weight:bold}
+.step.done{color:#16836f}
+.page{display:none}
+.page.active{display:block}
+.page h2{margin-top:0}
+.field{margin:15px 0}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d9dce5;border-radius:7px;font:14px Arial}
+input[type=color]{height:43px;padding:4px}
+input[type=checkbox]{width:auto}
+textarea{min-height:85px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.btn{padding:11px 16px;background:#635bdb;color:white;border:0;border-radius:7px;cursor:pointer;font-weight:bold}
+.btn.secondary{background:#efedff;color:#635bdb}
+.btn.white{background:white;color:#333;border:1px solid #ddd}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.toolbar{display:flex;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid #eee}
+.notice{padding:12px;background:#efedff;color:#554bc9;border-radius:7px;font-size:13px;margin:13px 0}
+.item{padding:12px;border:1px solid #eee;border-radius:7px;margin:10px 0;display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.small{font-size:11px;color:#888}
+.hidden{display:none!important}
+.preview-shell{border:1px solid #ddd;border-radius:9px;overflow:hidden;background:#e9eaf0}
+.preview-toolbar{background:#fff;border-bottom:1px solid #ddd;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.preview-toolbar span{font-size:12px;color:#777}
+.preview-frame{width:100%;height:650px;border:0;display:block;background:white}
+.editor-grid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:15px;margin-top:15px}
+.editor-controls{border:1px solid #e5e7eb;border-radius:9px;padding:14px;background:#fff;align-self:start}
+.editor-controls h3{font-size:15px;margin:0 0 12px}
+.editor-controls .field{margin:12px 0}
+.editor-controls input{font-size:12px}
+.selected-info{font-size:11px;color:#635bdb;overflow-wrap:anywhere;background:#f4f2ff;padding:8px;border-radius:6px}
+.preview-message{font-size:12px;color:#777;padding:10px;background:#fff}
+.status{font-size:12px;color:#16836f}
+.review-frame{height:700px}
+@media(max-width:950px){
+ .editor-grid{grid-template-columns:1fr}
+ .editor-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ .editor-controls h3,.selected-info{grid-column:1/-1}
+}
+@media(max-width:750px){
+ header{padding:0 12px}
+ .layout{grid-template-columns:1fr}
+ .steps{display:flex;overflow-x:auto}
+ .step{min-width:120px}
+ .two{grid-template-columns:1fr}
+ .preview-frame{height:550px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <a href="../../index.html" class="logo">ARAM EVENTS</a>
+ <div style="display:flex;gap:10px">
+  <button class="btn white" onclick="saveDraft()">Save Draft</button>
+  <button class="btn" onclick="downloadTemplate()">Download HTML</button>
+ </div>
+</header>
+
+<div class="container">
+
+<h1>Create Your Event</h1>
+<p class="muted">Select a template, customize your event and preview every change.</p>
+
+<div class="layout">
+
+<aside>
+ <strong>Event Builder</strong>
+ <div class="steps">
+  <div class="step active" onclick="goStep(0)">1. Template Editor</div>
+  <div class="step" onclick="goStep(1)">2. Event Details</div>
+  <div class="step" onclick="goStep(2)">3. Branding</div>
+  <div class="step" onclick="goStep(3)">4. Agenda</div>
+  <div class="step" onclick="goStep(4)">5. Speakers</div>
+  <div class="step" onclick="goStep(5)">6. Tickets</div>
+  <div class="step" onclick="goStep(6)">7. Final Preview</div>
+ </div>
+ <div class="notice">Click any element in the preview to edit its content, color, background or font size.</div>
+</aside>
+
+<main class="panel">
+
+<div id="progressText" class="muted">Step 1 of 7</div>
+<div style="height:6px;background:#eee;margin:12px 0 24px;border-radius:10px">
+ <div id="progress" style="height:6px;width:14.28%;background:#635bdb;border-radius:10px"></div>
+</div>
+
+<!-- STEP 1 -->
+
+<section class="page active">
+<h2>Select and Edit Your Design</h2>
+<p class="muted">Select a category and a template. The selected design will load below.</p>
+
+<div class="two">
+ <div class="field">
+  <label>Event Category</label>
+  <select id="category"></select>
+ </div>
+ <div class="field">
+  <label>Template Design</label>
+  <select id="template"></select>
+ </div>
+</div>
+
+<div class="notice" id="templateInfo">Loading template...</div>
+
+<div class="preview-shell">
+ <div class="preview-toolbar">
+  <span id="previewStatus">Loading design...</span>
+  <div style="display:flex;gap:7px">
+   <button class="btn secondary" onclick="reloadTemplate()">Reload Original</button>
+   <button class="btn secondary" onclick="openOriginal()">Open Original</button>
+  </div>
+ </div>
+
+ <iframe id="liveFrame" class="preview-frame"
+  title="Live template editor"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+ <div class="preview-message">
+  Click a heading, paragraph, button, image or other element inside the design to select it.
+ </div>
+</div>
+
+<div class="editor-grid">
+ <div class="editor-controls">
+  <h3>Selected Element Editor</h3>
+
+  <div class="selected-info" id="selectedInfo">
+   No element selected. Click something in the preview.
+  </div>
+
+  <div class="field" style="grid-column:1/-1">
+   <label>Text / Content</label>
+   <textarea id="editText" rows="3" placeholder="Select an element first" disabled></textarea>
+  </div>
+
+  <div class="field">
+   <label>Text Color</label>
+   <input type="color" id="editColor" value="#29231f" disabled>
+  </div>
+
+  <div class="field">
+   <label>Background Color</label>
+   <input type="color" id="editBackground" value="#ffffff" disabled>
+  </div>
+
+  <div class="field">
+   <label>Font Size (px)</label>
+   <input type="number" id="editSize" min="8" max="150" disabled>
+  </div>
+
+  <div class="field">
+   <label>Image Replacement</label>
+   <input type="file" id="editImage" accept="image/*" disabled>
+  </div>
+
+  <div style="grid-column:1/-1">
+   <button class="btn secondary" onclick="clearSelection()">Deselect Element</button>
+  </div>
+ </div>
+</div>
+
+<p class="small">Your changes are stored separately for each selected template.</p>
+</section>
+
+<!-- STEP 2 -->
+
+<section class="page">
+<h2>Event Details</h2>
+
+<div class="field">
+ <label>Event Name *</label>
+ <input id="eventName" placeholder="Enter event name">
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Event Type *</label>
+  <select id="format">
+   <option value="">Select type</option>
+   <option>In-person</option>
+   <option>Virtual</option>
+   <option>Hybrid</option>
+  </select>
+ </div>
+ <div class="field">
+  <label>Organizer</label>
+  <input id="organizer" placeholder="Organization name">
+ </div>
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Start Date *</label>
+  <input type="date" id="startDate">
+ </div>
+ <div class="field">
+  <label>End Date *</label>
+  <input type="date" id="endDate">
+ </div>
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Start Time</label>
+  <input type="time" id="startTime">
+ </div>
+ <div class="field">
+  <label>End Time</label>
+  <input type="time" id="endTime">
+ </div>
+</div>
+
+<div class="field">
+ <label>Venue / Meeting Link</label>
+ <input id="venue" placeholder="Location or online meeting link">
+</div>
+
+<div class="field">
+ <label>Event Description *</label>
+ <textarea id="description" placeholder="Describe your event"></textarea>
+</div>
+</section>
+
+<!-- STEP 3 -->
+
+<section class="page">
+<h2>Branding & Design</h2>
+
+<div class="two">
+ <div class="field">
+  <label>Primary Color</label>
+  <input type="color" id="primaryColor" value="#a64d32">
+ </div>
+ <div class="field">
+  <label>Banner Color</label>
+  <input type="color" id="bannerColor" value="#29231f">
+ </div>
+</div>
+
+<div class="field">
+ <label>Event Logo</label>
+ <input type="file" id="logo" accept="image/*">
+</div>
+
+<div class="field">
+ <label>Event Banner</label>
+ <input type="file" id="banner" accept="image/*">
+</div>
+</section>
+
+<!-- STEP 4 -->
+
+<section class="page">
+<h2>Event Agenda</h2>
+
+<div class="field">
+ <label>Session Title</label>
+ <input id="sessionTitle" placeholder="Opening ceremony">
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Session Date</label>
+  <input type="date" id="sessionDate">
+ </div>
+ <div class="field">
+  <label>Session Time</label>
+  <input type="time" id="sessionTime">
+ </div>
+</div>
+
+<div class="field">
+ <label>Description</label>
+ <input id="sessionDescription" placeholder="Session details">
+</div>
+
+<button class="btn secondary" onclick="addSession()">+ Add Session</button>
+<div id="sessionList"></div>
+</section>
+
+<!-- STEP 5 -->
+
+<section class="page">
+<h2>Speakers</h2>
+
+<div class="field">
+ <label>Speaker Name</label>
+ <input id="speakerName" placeholder="Enter speaker name">
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Designation</label>
+  <input id="speakerRole" placeholder="Professor / CEO">
+ </div>
+ <div class="field">
+  <label>Organization</label>
+  <input id="speakerOrg" placeholder="Company name">
+ </div>
+</div>
+
+<div class="field">
+ <label>Speaker Bio</label>
+ <textarea id="speakerBio" placeholder="About the speaker"></textarea>
+</div>
+
+<button class="btn secondary" onclick="addSpeaker()">+ Add Speaker</button>
+<div id="speakerList"></div>
+</section>
+
+<!-- STEP 6 -->
+
+<section class="page">
+<h2>Tickets & Registration</h2>
+
+<div class="field">
+ <label>Registration Type</label>
+ <select id="ticketType">
+  <option>Free</option>
+  <option>Paid</option>
+  <option>Invitation Only</option>
+ </select>
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Ticket Name</label>
+  <input id="ticketName" value="General Admission">
+ </div>
+ <div class="field">
+  <label>Price (₹)</label>
+  <input type="number" id="ticketPrice" min="0" value="0">
+ </div>
+</div>
+
+<div class="two">
+ <div class="field">
+  <label>Maximum Attendees</label>
+  <input type="number" id="capacity" min="1" placeholder="100">
+ </div>
+ <div class="field">
+  <label>Registration Deadline</label>
+  <input type="date" id="deadline">
+ </div>
+</div>
+</section>
+
+<!-- STEP 7 -->
+
+<section class="page">
+<h2>Final Event Preview</h2>
+<p class="muted">Review your selected and edited template.</p>
+
+<div class="preview-shell">
+ <div class="preview-toolbar">
+  <span>Final edited website</span>
+  <button class="btn secondary" onclick="refreshFinalPreview()">Refresh Preview</button>
+ </div>
+
+ <iframe id="finalFrame" class="preview-frame review-frame"
+  title="Final event preview"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+</div>
+
+<div class="field">
+ <label>
+  <input type="checkbox" id="confirm">
+  I confirm that the event details are correct.
+ </label>
+</div>
+
+<button class="btn" onclick="saveEvent()">Save Event</button>
+<div id="message" class="notice hidden"></div>
+
+<p class="small">Events and drafts are saved locally in your browser. Online publishing requires a backend and hosting.</p>
+</section>
+
+<div class="toolbar" id="toolbar">
+ <button class="btn white" id="previous" onclick="move(-1)" disabled>← Previous</button>
+ <button class="btn" id="next" onclick="move(1)">Continue →</button>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+/* ======================================
+   TEMPLATE CATALOG
+====================================== */
+
+const catalog = {
+ "art-photos":[
+  ["01-editorial.html","Editorial"],
+  ["02-modern-grid.html","Modern Grid"],
+  ["03-dark-stage.html","Dark Stage"],
+  ["04-bold-poster.html","Bold Poster"],
+  ["05-minimal.html","Minimal"]
+ ],
+ "automotive":[
+  ["01-editorial.html","Editorial"],
+  ["02-modern-grid.html","Modern Grid"],
+  ["03-dark-stage.html","Dark Stage"],
+  ["04-bold-poster.html","Bold Poster"],
+  ["05-minimal.html","Minimal"]
+ ],
+ "business":[
+  ["01-editorial.html","Editorial"],
+  ["02-dashboard.html","Dashboard"],
+  ["03-dark-premium.html","Dark Premium"],
+  ["04-kinetic.html","Kinetic"],
+  ["05-warm-cards.html","Warm Cards"]
+ ],
+ "Career":[
+  ["01-professional.html","Professional"],
+  ["02-modern-career.html","Modern Career"],
+  ["03-dark-networking.html","Dark Networking"],
+  ["04-creative-jobs.html","Creative Jobs"],
+  ["05-minimal-conference.html","Minimal Conference"]
+ ],
+ "data-analytics":[
+  ["01-data-summit.html","Data Summit"],
+  ["02-analytics-dashboard.html","Analytics Dashboard"],
+  ["03-dark-tech.html","Dark Tech"],
+  ["04-data-innovation.html","Data Innovation"],
+  ["05-minimal-insights.html","Minimal Insights"]
+ ]
+};
+
+const labels={
+ "art-photos":"Art & Photos",
+ "automotive":"Automotive",
+ "business":"Business",
+ "Career":"Career",
+ "data-analytics":"Data Analytics"
+};
+
+const $=id=>document.getElementById(id);
+
+let step=0;
+let sessions=[];
+let speakers=[];
+let logoData="";
+let bannerData="";
+let selectedElement=null;
+let originalHTML="";
+let currentHTML="";
+let currentURL="";
+let currentDraftKey="";
+let loadingTemplate=false;
+
+const pages=[...document.querySelectorAll(".page")];
+const stepItems=[...document.querySelectorAll(".step")];
+
+const formFields=[
+ "eventName","format","organizer","startDate","endDate",
+ "startTime","endTime","venue","description",
+ "primaryColor","bannerColor","ticketType","ticketName",
+ "ticketPrice","capacity","deadline"
+];
+
+/* ======================================
+   INITIALIZATION
+====================================== */
+
+function initialize(){
+
+ if(location.protocol==="file:"){
+  $("previewStatus").textContent="Local server required.";
+  $("liveFrame").srcdoc=
+   "<h2 style='font-family:Arial;padding:25px'>Please start the local server.</h2>";
+  alert("Please start the local server using: py -m http.server 5500");
+  return;
+ }
+
+ const params=new URLSearchParams(location.search);
+
+ const requestedCategory=params.get("category");
+ const requestedTemplate=params.get("template");
+
+ $("category").innerHTML=Object.keys(catalog).map(key=>
+  `<option value="${key}">${labels[key]}</option>`
+ ).join("");
+
+ let category=catalog[requestedCategory]
+  ?requestedCategory
+  :"art-photos";
+
+ $("category").value=category;
+
+ fillTemplates(requestedTemplate);
+
+ // Restore only the draft belonging to this exact template.
+ loadTemplateDraft();
+
+ $("category").addEventListener("change",()=>{
+  fillTemplates();
+  loadTemplateDraft();
+  loadSelectedTemplate();
+ });
+
+ $("template").addEventListener("change",()=>{
+  loadTemplateDraft();
+  loadSelectedTemplate();
+ });
+
+ bindFormAutosave();
+ updateWizard();
+}
+
+/* ======================================
+   TEMPLATE SELECTION
+====================================== */
+
+function getDraftKey(){
+ return "aramEventDraft_"+$("category").value+"_"+$("template").value;
+}
+
+function fillTemplates(preferred){
+
+ const category=$("category").value;
+ const items=catalog[category];
+
+ $("template").innerHTML=items.map(item=>
+  `<option value="${item[0]}">${item[1]}</option>`
+ ).join("");
+
+ if(preferred&&items.some(item=>item[0]===preferred)){
+  $("template").value=preferred;
+ }
+
+ updateSelection();
+}
+
+function updateSelection(){
+
+ const category=$("category").value;
+ const file=$("template").value;
+
+ const item=catalog[category].find(x=>x[0]===file);
+
+ $("templateInfo").textContent=
+  "Selected: "+labels[category]+" / "+(item?item[1]:"");
+
+ currentURL="../"+category+"/"+file;
+ currentDraftKey=getDraftKey();
+}
+
+/* ======================================
+   DRAFT RESTORE
+====================================== */
+
+function loadTemplateDraft(){
+
+ updateSelection();
+
+ let draft=null;
+
+ try{
+  draft=JSON.parse(localStorage.getItem(currentDraftKey)||"null");
+ }catch(e){
+  console.warn("Could not read template draft.",e);
+ }
+
+ formFields.forEach(id=>{
+  const el=$(id);
+  if(el){
+   el.value=draft&&draft[id]!==undefined
+    ?draft[id]
+    :(el.defaultValue||"");
+  }
+ });
+
+ sessions=draft&&Array.isArray(draft.sessions)?draft.sessions:[];
+ speakers=draft&&Array.isArray(draft.speakers)?draft.speakers:[];
+
+ logoData=draft?draft.logo||"":"";
+ bannerData=draft?draft.banner||"":"";
+
+ renderSessions();
+ renderSpeakers();
+
+ $("logo").value="";
+ $("banner").value="";
+ $("editImage").value="";
+
+ $("confirm").checked=false;
+ $("message").classList.add("hidden");
+
+ originalHTML=draft?draft.originalHTML||"":"";
+ currentHTML=draft?draft.editedHTML||"":"";
+
+ selectedElement=null;
+ disableEditor();
+}
+
+/* ======================================
+   LOAD SELECTED TEMPLATE
+====================================== */
+
+async function loadSelectedTemplate(){
+
+ updateSelection();
+
+ loadingTemplate=true;
+ selectedElement=null;
+ disableEditor();
+
+ $("previewStatus").textContent="Loading selected template...";
+
+ $("liveFrame").srcdoc=
+  "<html><body style='font-family:Arial;padding:25px'>Loading template...</body></html>";
+
+ try{
+
+  const response=await fetch(currentURL,{
+   cache:"no-store"
+  });
+
+  if(!response.ok){
+   throw new Error("Template not found: "+currentURL);
+  }
+
+  const fetchedHTML=await response.text();
+
+  // Preserve saved edits only for this exact template.
+  let draft=null;
+
+  try{
+   draft=JSON.parse(localStorage.getItem(currentDraftKey)||"null");
+  }catch(e){}
+
+  originalHTML=fetchedHTML;
+
+  if(draft&&draft.originalHTML===fetchedHTML&&draft.editedHTML){
+   currentHTML=draft.editedHTML;
+  }else{
+   currentHTML=fetchedHTML;
+  }
+
+  loadHTMLIntoPreview(currentHTML);
+
+  $("previewStatus").textContent=
+   "Loaded: "+labels[$("category").value]+" / "+$("template").value;
+
+  saveDraftQuiet();
+
+ }catch(error){
+
+  currentHTML="";
+  originalHTML="";
+
+  $("previewStatus").textContent="Unable to load template.";
+
+  $("liveFrame").srcdoc=`
+   <!DOCTYPE html>
+   <html>
+   <body style="font-family:Arial;padding:30px">
+    <h2>Template could not be loaded</h2>
+    <p>${escapeHTML(error.message)}</p>
+    <p>Check the category folder and template filename.</p>
+    <p>Open the application using localhost:5500.</p>
+   </body>
+   </html>`;
+
+  console.error(error);
+
+ }finally{
+  loadingTemplate=false;
+ }
+}
+
+/* ======================================
+   LIVE EDITOR INJECTION
+====================================== */
+
+function injectEditorScript(html){
+
+ const editorCode=`
+<style id="aram-editor-style">
+.aram-selected-element{
+ outline:3px solid #635bdb!important;
+ outline-offset:3px!important;
+ cursor:pointer!important;
+}
+</style>
+
+<script id="aram-editor-script">
+(function(){
+
+ function getElementPath(element){
+
+  const path=[];
+
+  while(element&&element!==document.documentElement){
+   const parent=element.parentElement;
+   if(!parent)break;
+
+   path.unshift(Array.from(parent.children).indexOf(element));
+   element=parent;
+  }
+
+  return path;
+ }
+
+ document.addEventListener("click",function(e){
+
+  const element=e.target.closest("body *");
+  if(!element)return;
+
+  // Do not allow preview navigation or form submission.
+  e.preventDefault();
+  e.stopPropagation();
+
+  if(element.closest("script,style"))return;
+
+  if(window.parent&&window.parent!==window){
+
+   window.parent.postMessage({
+    type:"ARAM_ELEMENT_SELECTED",
+    path:getElementPath(element),
+    tag:element.tagName,
+    text:element.innerText||element.alt||"",
+    id:element.id||"",
+    className:typeof element.className==="string"?element.className:"",
+    color:getComputedStyle(element).color,
+    background:getComputedStyle(element).backgroundColor,
+    fontSize:parseFloat(getComputedStyle(element).fontSize)||16,
+    isImage:element.tagName==="IMG"
+   },"*");
+  }
+
+ },true);
+
+})();
+<\/script>`;
+
+ if(/<\/body>/i.test(html)){
+  return html.replace(/<\/body>/i,editorCode+"</body>");
+ }
+
+ return html+editorCode;
+}
+
+function loadHTMLIntoPreview(html){
+
+ currentHTML=html;
+ selectedElement=null;
+ disableEditor();
+
+ $("liveFrame").srcdoc=injectEditorScript(html);
+}
+
+/* ======================================
+   SELECT ELEMENT
+====================================== */
+
+window.addEventListener("message",event=>{
+
+ if(event.source!==$("liveFrame").contentWindow)return;
+
+ if(event.data&&event.data.type==="ARAM_ELEMENT_SELECTED"){
+  selectElement(event.data);
+ }
+
+});
+
+function selectElement(info){
+
+ const doc=$("liveFrame").contentDocument;
+ if(!doc)return;
+
+ doc.querySelectorAll(".aram-selected-element").forEach(el=>{
+  el.classList.remove("aram-selected-element");
+ });
+
+ let element=doc.documentElement;
+
+ try{
+  for(const index of info.path){
+   element=element.children[index];
+   if(!element)break;
+  }
+ }catch(e){
+  element=null;
+ }
+
+ if(!element){
+  disableEditor();
+  return;
+ }
+
+ selectedElement=element;
+ selectedElement.classList.add("aram-selected-element");
+
+ $("selectedInfo").textContent=
+  info.tag+(info.id?" #"+info.id:"")+
+  (info.className?" ."+info.className.trim().replace(/\s+/g,"."):"");
+
+ $("editText").disabled=false;
+ $("editColor").disabled=false;
+ $("editBackground").disabled=false;
+ $("editSize").disabled=false;
+ $("editImage").disabled=false;
+
+ $("editText").value=selectedElement.innerText||selectedElement.alt||"";
+
+ $("editColor").value=toHex(
+  getComputedStyle(selectedElement).color,
+  "#29231f"
+ );
+
+ $("editBackground").value=toHex(
+  getComputedStyle(selectedElement).backgroundColor,
+  "#ffffff"
+ );
+
+ $("editSize").value=
+  parseFloat(getComputedStyle(selectedElement).fontSize)||16;
+
+ $("editImage").value="";
+}
+
+function disableEditor(){
+
+ $("selectedInfo").textContent=
+  "No element selected. Click something in the preview.";
+
+ ["editText","editColor","editBackground","editSize","editImage"]
+ .forEach(id=>$(id).disabled=true);
+
+ $("editText").value="";
+}
+
+function clearSelection(){
+
+ const doc=$("liveFrame").contentDocument;
+
+ if(doc){
+  doc.querySelectorAll(".aram-selected-element").forEach(el=>{
+   el.classList.remove("aram-selected-element");
+  });
+ }
+
+ selectedElement=null;
+ disableEditor();
+}
+
+function toHex(value,fallback){
+
+ if(!value||value==="transparent"||value==="rgba(0, 0, 0, 0)")
+  return fallback;
+
+ const match=value.match(/\d+/g);
+ if(!match||match.length<3)return fallback;
+
+ return "#"+match.slice(0,3).map(x=>
+  Number(x).toString(16).padStart(2,"0")
+ ).join("");
+}
+
+/* ======================================
+   EDIT SELECTED ELEMENT
+====================================== */
+
+function updateSelected(){
+
+ if(!selectedElement)return;
+
+ currentHTML=getCurrentDocumentHTML();
+ saveDraftQuiet();
+}
+
+$("editText").addEventListener("input",()=>{
+
+ if(!selectedElement)return;
+
+ if(selectedElement.tagName==="IMG"){
+  selectedElement.alt=$("editText").value;
+ }else{
+  selectedElement.innerText=$("editText").value;
+ }
+
+ updateSelected();
+});
+
+$("editColor").addEventListener("input",()=>{
+
+ if(!selectedElement)return;
+
+ selectedElement.style.color=$("editColor").value;
+ updateSelected();
+});
+
+$("editBackground").addEventListener("input",()=>{
+
+ if(!selectedElement)return;
+
+ selectedElement.style.backgroundColor=$("editBackground").value;
+ updateSelected();
+});
+
+$("editSize").addEventListener("input",()=>{
+
+ if(!selectedElement)return;
+
+ const size=Number($("editSize").value);
+
+ if(size>=8&&size<=150){
+  selectedElement.style.fontSize=size+"px";
+  updateSelected();
+ }
+});
+
+$("editImage").addEventListener("change",()=>{
+
+ const file=$("editImage").files[0];
+
+ if(!file||!selectedElement)return;
+
+ if(!file.type.startsWith("image/")){
+  alert("Select a valid image.");
+  return;
+ }
+
+ if(file.size>2*1024*1024){
+  alert("Please select an image smaller than 2 MB.");
+  $("editImage").value="";
+  return;
+ }
+
+ const reader=new FileReader();
+
+ reader.onload=()=>{
+
+  if(selectedElement.tagName==="IMG"){
+   selectedElement.src=reader.result;
+   selectedElement.removeAttribute("srcset");
+  }else{
+   selectedElement.style.backgroundImage=`url("${reader.result}")`;
+   selectedElement.style.backgroundSize="cover";
+   selectedElement.style.backgroundPosition="center";
+  }
+
+  updateSelected();
+ };
+
+ reader.readAsDataURL(file);
+});
+
+/* ======================================
+   GET FINAL HTML
+====================================== */
+
+function getCurrentDocumentHTML(){
+
+ const doc=$("liveFrame").contentDocument;
+
+ if(!doc)return currentHTML;
+
+ const clone=doc.documentElement.cloneNode(true);
+
+ clone.querySelectorAll(".aram-selected-element").forEach(el=>{
+  el.classList.remove("aram-selected-element");
+ });
+
+ clone.querySelector("#aram-editor-script")?.remove();
+ clone.querySelector("#aram-editor-style")?.remove();
+
+ return "<!DOCTYPE html>\n"+clone.outerHTML;
+}
+
+/* ======================================
+   RELOAD ORIGINAL / OPEN ORIGINAL
+====================================== */
+
+function reloadTemplate(){
+
+ if(!originalHTML){
+  alert("Original template is not loaded.");
+  return;
+ }
+
+ if(!confirm("Discard edits and restore the original template?"))return;
+
+ currentHTML=originalHTML;
+
+ loadHTMLIntoPreview(currentHTML);
+ saveDraftQuiet();
+
+ $("previewStatus").textContent="Original template restored.";
+}
+
+function openOriginal(){
+
+ if(!currentURL)return;
+
+ window.open(currentURL,"_blank");
+}
+
+/* ======================================
+   WIZARD NAVIGATION
+====================================== */
+
+function updateWizard(){
+
+ pages.forEach((page,i)=>{
+  page.classList.toggle("active",i===step);
+ });
+
+ stepItems.forEach((item,i)=>{
+  item.classList.toggle("active",i===step);
+  item.classList.toggle("done",i<step);
+ });
+
+ $("progressText").textContent=`Step ${step+1} of 7`;
+
+ $("progress").style.width=
+  ((step+1)/7*100)+"%";
+
+ $("previous").disabled=step===0;
+
+ $("next").classList.toggle("hidden",step===6);
+ $("toolbar").classList.toggle("hidden",step===6);
+
+ if(step===6){
+  refreshFinalPreview();
+ }
+}
+
+function goStep(target){
+
+ if(target>step&&!validate())return;
+
+ step=target;
+ updateWizard();
+ saveDraftQuiet();
+}
+
+function move(direction){
+
+ if(direction>0&&!validate())return;
+
+ step=Math.max(0,Math.min(6,step+direction));
+
+ updateWizard();
+ saveDraftQuiet();
+}
+
+function validate(){
+
+ if(step===0&&!currentHTML){
+  alert("Please select a template and wait for it to load.");
+  return false;
+ }
+
+ if(step===1){
+
+  const required=[
+   "eventName","format","startDate","endDate","description"
+  ];
+
+  for(const id of required){
+
+   if(!$(id).value.trim()){
+    alert("Please complete all required event details.");
+    $(id).focus();
+    return false;
+   }
+  }
+
+  if($("endDate").value<$("startDate").value){
+   alert("End date cannot be before start date.");
+   return false;
+  }
+ }
+
+ return true;
+}
+
+/* ======================================
+   DATA COLLECTION
+====================================== */
+
+function getData(){
+
+ const data={
+  category:$("category").value,
+  template:$("template").value,
+  sessions,
+  speakers,
+  logo:logoData,
+  banner:bannerData,
+  originalHTML,
+  editedHTML:getCurrentDocumentHTML()
+ };
+
+ formFields.forEach(id=>{
+  data[id]=$(id).value;
+ });
+
+ return data;
+}
+
+/* ======================================
+   DRAFT SAVE
+====================================== */
+
+function saveDraftQuiet(){
+
+ if(!currentDraftKey)return;
+
+ try{
+  localStorage.setItem(
+   currentDraftKey,
+   JSON.stringify(getData())
+  );
+ }catch(error){
+  console.warn("Browser storage limit reached.",error);
+ }
+}
+
+function saveDraft(){
+
+ try{
+  saveDraftQuiet();
+  alert("Draft saved for this selected template.");
+ }catch(error){
+  alert("Unable to save. Browser storage may be full.");
+ }
+}
+
+function bindFormAutosave(){
+
+ formFields.forEach(id=>{
+
+  $(id).addEventListener("input",saveDraftQuiet);
+  $(id).addEventListener("change",saveDraftQuiet);
+
+ });
+}
+
+/* ======================================
+   AGENDA
+====================================== */
+
+function addSession(){
+
+ const title=$("sessionTitle").value.trim();
+
+ if(!title){
+  alert("Enter a session title.");
+  return;
+ }
+
+ sessions.push({
+  title,
+  date:$("sessionDate").value,
+  time:$("sessionTime").value,
+  description:$("sessionDescription").value
+ });
+
+ ["sessionTitle","sessionDate","sessionTime","sessionDescription"]
+ .forEach(id=>$(id).value="");
+
+ renderSessions();
+ saveDraftQuiet();
+}
+
+function renderSessions(){
+
+ const list=$("sessionList");
+ list.innerHTML="";
+
+ sessions.forEach((session,index)=>{
+
+  const div=document.createElement("div");
+  div.className="item";
+
+  const text=document.createElement("span");
+
+  text.textContent=[
+   session.title,
+   session.date,
+   session.time,
+   session.description
+  ].filter(Boolean).join(" · ");
+
+  const remove=document.createElement("button");
+  remove.className="btn white";
+  remove.textContent="Remove";
+
+  remove.onclick=()=>{
+   sessions.splice(index,1);
+   renderSessions();
+   saveDraftQuiet();
+  };
+
+  div.append(text,remove);
+  list.append(div);
+ });
+}
+
+/* ======================================
+   SPEAKERS
+====================================== */
+
+function addSpeaker(){
+
+ const name=$("speakerName").value.trim();
+
+ if(!name){
+  alert("Enter speaker name.");
+  return;
+ }
+
+ speakers.push({
+  name,
+  role:$("speakerRole").value,
+  organization:$("speakerOrg").value,
+  bio:$("speakerBio").value
+ });
+
+ ["speakerName","speakerRole","speakerOrg","speakerBio"]
+ .forEach(id=>$(id).value="");
+
+ renderSpeakers();
+ saveDraftQuiet();
+}
+
+function renderSpeakers(){
+
+ const list=$("speakerList");
+ list.innerHTML="";
+
+ speakers.forEach((speaker,index)=>{
+
+  const div=document.createElement("div");
+  div.className="item";
+
+  const text=document.createElement("span");
+
+  text.textContent=[
+   speaker.name,
+   speaker.role,
+   speaker.organization
+  ].filter(Boolean).join(" · ");
+
+  const remove=document.createElement("button");
+  remove.className="btn white";
+  remove.textContent="Remove";
+
+  remove.onclick=()=>{
+   speakers.splice(index,1);
+   renderSpeakers();
+   saveDraftQuiet();
+  };
+
+  div.append(text,remove);
+  list.append(div);
+ });
+}
+
+/* ======================================
+   BRANDING AND IMAGES
+====================================== */
+
+function loadImage(input,type){
+
+ const file=input.files[0];
+ if(!file)return;
+
+ if(!file.type.startsWith("image/")){
+  alert("Select a valid image.");
+  input.value="";
+  return;
+ }
+
+ if(file.size>2*1024*1024){
+  alert("Please select an image smaller than 2 MB.");
+  input.value="";
+  return;
+ }
+
+ const reader=new FileReader();
+
+ reader.onload=()=>{
+
+  if(type==="logo")logoData=reader.result;
+  else bannerData=reader.result;
+
+  applyBranding();
+  saveDraftQuiet();
+ };
+
+ reader.readAsDataURL(file);
+}
+
+function applyBranding(){
+
+ const doc=$("liveFrame").contentDocument;
+ if(!doc)return;
+
+ if(bannerData){
+
+  const hero=doc.querySelector(".hero");
+
+  if(hero){
+   hero.style.backgroundImage=
+    `linear-gradient(#0005,#0005),url("${bannerData}")`;
+
+   hero.style.backgroundSize="cover";
+   hero.style.backgroundPosition="center";
+  }
+ }
+
+ if(logoData){
+
+  const logo=doc.querySelector("header .logo");
+
+  if(logo){
+
+   const img=doc.createElement("img");
+
+   img.src=logoData;
+   img.alt="Event logo";
+   img.style.maxHeight="60px";
+   img.style.maxWidth="180px";
+   img.style.objectFit="contain";
+
+   logo.replaceWith(img);
+  }
+ }
+
+ doc.querySelectorAll(".btn").forEach(el=>{
+  el.style.backgroundColor=$("primaryColor").value;
+ });
+
+ const hero=doc.querySelector(".hero");
+
+ if(hero){
+  hero.style.backgroundColor=$("bannerColor").value;
+ }
+
+ currentHTML=getCurrentDocumentHTML();
+}
+
+$("logo").addEventListener("change",()=>{
+ loadImage($("logo"),"logo");
+});
+
+$("banner").addEventListener("change",()=>{
+ loadImage($("banner"),"banner");
+});
+
+$("primaryColor").addEventListener("input",()=>{
+
+ const doc=$("liveFrame").contentDocument;
+ if(!doc)return;
+
+ doc.querySelectorAll(".btn").forEach(el=>{
+  el.style.backgroundColor=$("primaryColor").value;
+ });
+
+ currentHTML=getCurrentDocumentHTML();
+ saveDraftQuiet();
+});
+
+$("bannerColor").addEventListener("input",()=>{
+
+ const doc=$("liveFrame").contentDocument;
+ if(!doc)return;
+
+ const hero=doc.querySelector(".hero");
+
+ if(hero){
+  hero.style.backgroundColor=$("bannerColor").value;
+ }
+
+ currentHTML=getCurrentDocumentHTML();
+ saveDraftQuiet();
+});
+
+/* ======================================
+   FINAL PREVIEW
+====================================== */
+
+function refreshFinalPreview(){
+
+ const html=getCurrentDocumentHTML();
+
+ if(html){
+  $("finalFrame").srcdoc=html;
+ }
+}
+
+/* ======================================
+   DOWNLOAD HTML
+====================================== */
+
+function downloadTemplate(){
+
+ const html=getCurrentDocumentHTML();
+
+ if(!html){
+  alert("Please load a template first.");
+  return;
+ }
+
+ const blob=new Blob([html],{
+  type:"text/html"
+ });
+
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=
+  "aram-events-"+$("category").value+"-"+$("template").value;
+
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+/* ======================================
+   SAVE EVENT
+====================================== */
+
+function saveEvent(){
+
+ if(!$("confirm").checked){
+  alert("Please confirm the event details.");
+  return;
+ }
+
+ const d=getData();
+
+ if(!d.eventName||!d.startDate||!d.endDate||!d.description){
+  alert("Complete the required event details.");
+  return;
+ }
+
+ const event={
+  ...d,
+  id:"ARAM-"+Date.now(),
+  status:"Saved locally",
+  createdAt:new Date().toISOString()
+ };
+
+ try{
+
+  const existing=JSON.parse(
+   localStorage.getItem("aramEvents")||"[]"
+  );
+
+  existing.push(event);
+
+  localStorage.setItem(
+   "aramEvents",
+   JSON.stringify(existing)
+  );
+
+  $("message").classList.remove("hidden");
+
+  $("message").textContent=
+   "Event saved successfully! Event ID: "+event.id;
+
+ }catch(error){
+
+  alert("Unable to save. Browser storage may be full.");
+
+ }
+}
+
+/* ======================================
+   UTILITIES
+====================================== */
+
+function escapeHTML(value){
+
+ return String(value).replace(/[&<>"']/g,char=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[char]));
+}
+
+/* ======================================
+   START APPLICATION
+====================================== */
+
+initialize();
+
+</script>
+
+</body>
+</html>

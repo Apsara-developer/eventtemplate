@@ -1,0 +1,11 @@
+{
+  "id": "43cb1083-3f7e-4d80-920b-a5c528757f3e",
+  "userId": "c483447d-e5e4-409f-91d0-a40e1ff2ca8b",
+  "name": "my-website",
+  "category": "Portfolio",
+  "originalPrompt": "Create a luxury photography portfolio website\r\nfor a professional photographer.\r\n\r\nUse a minimalist black and white design.\r\nMake photography the main focus.\r\n\r\nInclude:\r\n- Full-screen hero photograph\r\n- Photographer introduction\r\n- Large visual photo gallery\r\n- Wedding photography collection\r\n- Portrait photography collection\r\n- Travel photography collection\r\n- About the photographer\r\n- Client testimonials\r\n- Booking and contact form\r\n\r\nUse elegant serif typography, spacious layouts,\r\nbeautiful image grids and subtle hover animations.",
+  "design": "luxury",
+  "flyerText": "",
+  "fileName": "my-website-1794925236498.html",
+  "createdAt": "2026-11-17T14:20:36.500Z"
+}

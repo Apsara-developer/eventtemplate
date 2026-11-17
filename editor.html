@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Aram Events | Professional Website Builder</title>
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">A</div>
+    ARAM EVENTS
+  </div>
+
+  <div class="top-actions">
+    <button id="saveBtn">Save Draft</button>
+    <button id="undoBtn">Undo</button>
+    <button id="redoBtn">Redo</button>
+    <button id="restoreBtn">Restore</button>
+    <button id="previewBtn">Preview</button>
+    <button id="publishBtn">Publish Locally</button>
+    <button class="download-btn" id="downloadBtn">↓ Download Website</button>
+    <a href="create-website.html">Create Website</a>
+    <a href="index.html">Back to Templates</a>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <!-- LEFT: WEBSITE PREVIEW -->
+
+  <section class="preview-panel">
+
+    <div class="preview-heading">
+      <h2>Website Editor</h2>
+      <span>Live Preview · Click elements to edit</span>
+    </div>
+
+    <div class="preview-sizes">
+      <button class="secondary-btn" data-size="100%">Desktop</button>
+      <button class="secondary-btn" data-size="768px">Tablet</button>
+      <button class="secondary-btn" data-size="390px">Mobile</button>
+    </div>
+
+    <div class="preview-frame">
+      <iframe id="websitePreview" title="Live website editor"></iframe>
+    </div>
+
+    <p class="status" id="statusMessage">Loading website...</p>
+
+  </section>
+
+  <!-- RIGHT: EDITOR PANEL -->
+
+  <aside class="sidebar">
+
+    <h2>Customize Website</h2>
+
+    <p class="subtitle">
+      Edit website content, images, sections and layouts.
+      Changes appear in the live preview.
+    </p>
+
+    <!-- SECTION MANAGEMENT -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>Website Sections</h3>
+        <span class="counter" id="sectionCount">00</span>
+      </div>
+
+      <div id="sectionList"></div>
+
+      <button class="secondary-btn full-btn" id="refreshSectionsBtn">
+        ↻ Refresh Sections
+      </button>
+
+    </div>
+
+    <!-- ADD SECTION -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>Add New Section</h3>
+      </div>
+
+      <div class="type-grid">
+
+        <button class="type-btn" data-type="paragraph">＋ Paragraph</button>
+        <button class="type-btn" data-type="image">＋ Image</button>
+        <button class="type-btn" data-type="image-text">＋ Image + Text</button>
+        <button class="type-btn" data-type="gallery">＋ Gallery</button>
+        <button class="type-btn" data-type="contact">＋ Contact</button>
+        <button class="type-btn" data-type="speakers">＋ Speakers</button>
+        <button class="type-btn" data-type="schedule">＋ Schedule</button>
+        <button class="type-btn" data-type="cards">＋ Cards</button>
+        <button class="type-btn" data-type="testimonials">＋ Testimonials</button>
+        <button class="type-btn" data-type="video">＋ Video</button>
+        <button class="type-btn" data-type="location">＋ Location</button>
+        <button class="type-btn" data-type="custom">＋ Custom</button>
+
+      </div>
+
+    </div>
+
+    <!-- SECTION SETTINGS -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>Edit Selected Section</h3>
+      </div>
+
+      <div class="field">
+        <label for="sectionNameInput">Section name</label>
+        <input id="sectionNameInput" placeholder="Section name">
+      </div>
+
+      <div class="tool-row">
+        <button class="secondary-btn" id="duplicateSectionBtn">Duplicate</button>
+        <button class="secondary-btn" id="toggleSectionBtn">Hide / Show</button>
+        <button class="danger-btn" id="deleteSectionBtn">Delete</button>
+      </div>
+
+      <div class="field">
+        <label for="sectionBackground">Background colour</label>
+        <input type="color" id="sectionBackground" value="#ffffff">
+      </div>
+
+      <div class="field">
+        <label for="sectionTextColor">Text colour</label>
+        <input type="color" id="sectionTextColor" value="#182337">
+      </div>
+
+      <div class="field">
+        <label for="sectionPadding">Section padding</label>
+        <input type="range" id="sectionPadding" min="0" max="150" value="50">
+        <small id="paddingValue">50 px</small>
+      </div>
+
+      <div class="field">
+        <label for="sectionAlignment">Content alignment</label>
+        <select id="sectionAlignment">
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="sectionLayout">Section layout</label>
+        <select id="sectionLayout">
+          <option value="default">Default</option>
+          <option value="full">Full width</option>
+          <option value="two-column">Two columns</option>
+          <option value="grid">Grid</option>
+          <option value="masonry">Masonry</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- TEXT EDITING -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>Edit Text</h3>
+      </div>
+
+      <div class="field">
+        <label for="textElementSelect">Select text element</label>
+        <select id="textElementSelect">
+          <option value="">Select text</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="textContentInput">Text content</label>
+        <textarea id="textContentInput" rows="4"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="fontSizeInput">Font size (px)</label>
+        <input type="number" id="fontSizeInput" min="8" max="120" value="16">
+      </div>
+
+      <div class="field">
+        <label for="fontWeightInput">Font weight</label>
+        <select id="fontWeightInput">
+          <option value="400">Regular</option>
+          <option value="500">Medium</option>
+          <option value="600">Semi Bold</option>
+          <option value="700">Bold</option>
+          <option value="800">Extra Bold</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="textAlignment">Text alignment</label>
+        <select id="textAlignment">
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="tool-row">
+        <button class="primary-btn" id="applyTextBtn">Apply Text</button>
+        <button class="secondary-btn" id="addTextBtn">Add Text</button>
+        <button class="danger-btn" id="deleteTextBtn">Delete Text</button>
+      </div>
+
+    </div>
+
+    <!-- IMAGE EDITING -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>Edit Images</h3>
+      </div>
+
+      <div class="field">
+        <label for="imageElementSelect">Select image</label>
+        <select id="imageElementSelect">
+          <option value="">Select image</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="imageUploadInput">Upload or replace image</label>
+        <input type="file" id="imageUploadInput" accept="image/*">
+      </div>
+
+      <div class="field">
+        <label for="imageCaptionInput">Image caption</label>
+        <input id="imageCaptionInput" placeholder="Enter image caption">
+      </div>
+
+      <div class="field">
+        <label for="imageWidth">Image width</label>
+        <select id="imageWidth">
+          <option value="100%">100%</option>
+          <option value="75%">75%</option>
+          <option value="50%">50%</option>
+          <option value="25%">25%</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="imageStyle">Image corner style</label>
+        <select id="imageStyle">
+          <option value="0">Square corners</option>
+          <option value="10px">Rounded corners</option>
+          <option value="24px">Extra rounded</option>
+          <option value="50%">Circular</option>
+        </select>
+      </div>
+
+      <!-- IMAGE ARRANGEMENTS -->
+
+      <div class="field">
+        <label for="imageArrangement">
+          Image arrangement
+        </label>
+
+        <select id="imageArrangement">
+
+          <option value="row">Flex — Row</option>
+          <option value="column">Flex — Column</option>
+          <option value="row-reverse">Flex — Row Reverse</option>
+          <option value="column-reverse">Flex — Column Reverse</option>
+          <option value="wrap">Flex — Wrap / Responsive</option>
+          <option value="grid-2">Grid — 2 Columns</option>
+          <option value="grid-3">Grid — 3 Columns</option>
+          <option value="grid">Grid — Custom Columns</option>
+          <option value="masonry">Masonry — Pinterest Style</option>
+
+        </select>
+
+        <div class="image-layout-help">
+          Choose how multiple images are arranged.
+          On mobile, rows automatically stack vertically.
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="imageGap">Image spacing (px)</label>
+        <input type="number" id="imageGap" min="0" max="100" value="18">
+      </div>
+
+      <div class="field">
+        <label for="imageColumns">Grid / masonry columns</label>
+        <input type="number" id="imageColumns" min="1" max="6" value="3">
+      </div>
+
+      <div class="field">
+        <label for="imageHeight">Image height (px)</label>
+        <input type="number" id="imageHeight" min="40" max="900" value="260">
+      </div>
+
+      <div class="field">
+        <label for="imageFit">Image fit</label>
+        <select id="imageFit">
+          <option value="cover">Cover</option>
+          <option value="contain">Contain</option>
+          <option value="fill">Fill</option>
+          <option value="none">Original</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="imageOpacity">Image opacity</label>
+        <input type="range" id="imageOpacity" min="0.1" max="1" step="0.05" value="1">
+      </div>
+
+      <div class="field">
+        <label for="imageShadow">Image shadow</label>
+        <select id="imageShadow">
+          <option value="no">No shadow</option>
+          <option value="yes">Soft shadow</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="imageBorder">Image border</label>
+        <select id="imageBorder">
+          <option value="none">No border</option>
+          <option value="2px solid #ffffff">White border</option>
+          <option value="2px solid #222222">Dark border</option>
+          <option value="2px solid #6855ee">Purple border</option>
+        </select>
+      </div>
+
+      <div class="tool-row">
+        <button class="primary-btn" id="applyImageBtn">Apply Image</button>
+        <button class="danger-btn" id="deleteImageBtn">Delete Image</button>
+      </div>
+
+      <button class="secondary-btn full-btn" id="addImageBtn">
+        ＋ Add Image
+      </button>
+
+    </div>
+
+    <!-- FLYER GENERATOR -->
+
+    <div class="editor-group">
+
+      <div class="group-heading">
+        <h3>AI Event Website Generator</h3>
+      </div>
+
+      <div class="field">
+        <label for="flyerInput">Upload Event Flyer</label>
+        <input type="file" id="flyerInput" accept=".jpg,.jpeg,.png,.webp,.pdf">
+      </div>
+
+      <img id="flyerPreview" alt="Flyer preview">
+
+      <iframe id="flyerPdfPreview" title="PDF preview"></iframe>
+
+      <button class="secondary-btn full-btn" id="extractFlyerBtn">
+        Extract Flyer Details
+      </button>
+
+      <p id="flyerStatus">Choose an event flyer.</p>
+
+      <div class="field">
+        <label for="flyerEventName">Event Name</label>
+        <input id="flyerEventName" placeholder="Event name">
+      </div>
+
+      <div class="field">
+        <label for="flyerDate">Event Date</label>
+        <input id="flyerDate" placeholder="Event date">
+      </div>
+
+      <div class="field">
+        <label for="flyerTime">Event Time</label>
+        <input id="flyerTime" placeholder="Event time">
+      </div>
+
+      <div class="field">
+        <label for="flyerVenue">Venue</label>
+        <input id="flyerVenue" placeholder="Event venue">
+      </div>
+
+      <div class="field">
+        <label for="flyerDescription">Description</label>
+        <textarea id="flyerDescription" rows="5"></textarea>
+      </div>
+
+      <button class="primary-btn full-btn" id="generateWebsiteBtn">
+        Generate Event Website
+      </button>
+
+    </div>
+
+    <div class="help-box">
+      <strong>Download your website</strong><br>
+      Customize sections, text, images and layouts, then download
+      the latest changes as an HTML file.
+    </div>
+
+  </aside>
+
+</main>
+
+<script src="js/auth-guard.js"></script><script src="js/editor.js"></script>
+
+</body>
+</html>

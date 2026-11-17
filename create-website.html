@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827"><title>Create a Website | Aram Events</title>
+<link rel="stylesheet" href="css/create-website.css">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">A</span><span>ARAM <b>EVENTS</b></span></a><nav><a href="index.html">Dashboard</a><a class="active" href="create-website.html">Create Website</a></nav><span class="local-tag">LOCAL AI BUILDER</span></header>
+<main class="page">
+  <section class="intro"><p class="eyebrow">YOUR IDEA. YOUR WEBSITE.</p><h1>What would you like to <em>create?</em></h1><p>Start with one of your existing designs or describe a completely new website. Both paths open in the same visual editor.</p></section>
+  <div class="tabs"><button class="tab active" data-tab="ai">✦ Generate with AI</button><button class="tab" data-tab="templates">▦ Choose a template</button></div>
+  <section id="aiPanel" class="panel">
+    <div class="panel-copy"><span class="step">01 / AI WEBSITE GENERATOR</span><h2>Describe your website idea</h2><p>Tell the local AI what you want to build. You can create an event website, business website, portfolio, conference page, or another design.</p>
+      <label for="websitePrompt">Your prompt</label><textarea id="websitePrompt" rows="6" placeholder="Example: Create a premium technology conference website with a dark navy background, electric blue accents, speaker cards, event schedule, venue details and registration call-to-action."></textarea>
+      <div class="prompt-examples"><button type="button" data-prompt="Create a premium technology conference website with a dark theme, speaker cards, schedule, venue and registration section.">Technology conference</button><button type="button" data-prompt="Create a modern creative photography portfolio with a full-screen visual hero, gallery grid, about section and contact details.">Photography portfolio</button><button type="button" data-prompt="Create an elegant business networking event website with a warm editorial style, agenda, venue and registration section.">Business event</button></div>
+      <div class="two-fields"><div><label for="designStyle">Design direction</label><select id="designStyle"><option>Choose the best style for my idea</option><option>Minimal and elegant</option><option>Bold and colorful</option><option>Dark premium</option><option>Modern editorial</option><option>Corporate professional</option><option>Creative and experimental</option></select></div><div><label for="projectName">Website / project name (optional)</label><input id="projectName" placeholder="e.g. Future Tech Summit"></div></div>
+      <label id="poster" class="upload-label" for="flyerFile">Optional: upload a flyer or PDF <small>JPG, PNG, WEBP or PDF · max 10 MB</small></label><input id="flyerFile" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf"><p class="hint">No flyer? No problem. Your written prompt is enough to generate a website.</p>
+      <button id="generateBtn" class="primary">✦ Generate my website <span>→</span></button><p id="generationStatus" class="status" aria-live="polite">AI generation runs locally through Ollama on your computer.</p>
+    </div>
+    <aside class="side-note"><div class="spark">✦</div><h3>Not a fixed template</h3><p>The AI creates a new page structure and visual design based on your prompt.</p><ul><li>Prompt-based website generation</li><li>Optional flyer text extraction</li><li>Responsive HTML, CSS and JavaScript</li><li>Continue editing in the visual editor</li></ul><div class="model-note"><b>Local AI</b><span>Ollama · qwen2.5:0.5b</span><small>No Gemini API key required.</small></div></aside>
+  </section>
+  <section id="templatesPanel" class="panel hidden"><div class="template-heading"><div><span class="step">02 / TEMPLATE LIBRARY</span><h2>Start with an existing design</h2><p>Choose a category and open any existing template in the website editor.</p></div><input id="templateSearch" placeholder="Search templates..."></div><div id="templateGrid" class="template-grid"><p>Loading your template collection...</p></div></section>
+</main>
+<footer>ARAM EVENTS <span>Website design and creation workspace</span></footer>
+<script src="js/auth-guard.js"></script><script src="js/create-website.js"></script>
+</body></html>

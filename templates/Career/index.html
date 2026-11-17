@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create Event | Aram Events</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f6fa;color:#202534;font-family:Arial,sans-serif}
+header{padding:18px 5%;background:white;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
+.logo{font-size:21px;font-weight:bold;color:#635bdb;text-decoration:none}
+.container{max-width:1150px;margin:35px auto;padding:0 18px}
+h1{margin-bottom:8px}
+.muted{color:#777;line-height:1.6;font-size:14px}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:20px;margin-top:25px}
+aside,.panel{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:20px}
+.step{padding:13px 10px;margin:5px 0;border-radius:7px;cursor:pointer;color:#777;font-size:13px}
+.step.active{background:#efedff;color:#635bdb;font-weight:bold}
+.step.done{color:#16836f}
+.page{display:none}
+.page.active{display:block}
+.page h2{margin-top:0}
+.field{margin:17px 0}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d9dce5;border-radius:7px;font:14px Arial}
+input[type=color]{height:45px;padding:4px}
+input[type=checkbox]{width:auto}
+textarea{min-height:90px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.btn{padding:12px 18px;background:#635bdb;color:white;border:0;border-radius:7px;cursor:pointer;font-weight:bold}
+.btn.secondary{background:#efedff;color:#635bdb}
+.btn.white{background:white;color:#333;border:1px solid #ddd}
+.toolbar{display:flex;justify-content:space-between;margin-top:25px;padding-top:20px;border-top:1px solid #eee}
+.notice{padding:13px;background:#efedff;color:#554bc9;border-radius:7px;font-size:13px;margin:15px 0}
+.item{padding:12px;border:1px solid #eee;border-radius:7px;margin:10px 0;display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.preview{border:1px solid #ddd;border-radius:10px;overflow:hidden}
+.cover{background:#292442;color:white;padding:40px 25px;min-height:180px}
+.cover h1{font-family:Georgia,serif;font-size:38px}
+.preview-content{padding:20px}
+.preview-box{padding:13px;background:#f5f6fa;border-radius:7px;margin:8px 0;font-size:13px}
+.small{font-size:12px;color:#888}
+.hidden{display:none!important}
+@media(max-width:750px){
+ .layout{grid-template-columns:1fr}
+ .steps{display:flex;overflow-x:auto}
+ .step{min-width:115px}
+ .two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <a href="../../index.html" class="logo">ARAM EVENTS</a>
+ <button class="btn white" onclick="saveDraft()">Save Draft</button>
+</header>
+
+<div class="container">
+ <h1>Create Your Event</h1>
+ <p class="muted">Customize your selected template and create your event website.</p>
+
+ <div class="layout">
+  <aside>
+   <strong>Event Builder</strong>
+   <div class="steps" id="steps">
+    <div class="step active" onclick="goStep(0)">1. Template</div>
+    <div class="step" onclick="goStep(1)">2. Event Details</div>
+    <div class="step" onclick="goStep(2)">3. Branding</div>
+    <div class="step" onclick="goStep(3)">4. Agenda</div>
+    <div class="step" onclick="goStep(4)">5. Speakers</div>
+    <div class="step" onclick="goStep(5)">6. Tickets</div>
+    <div class="step" onclick="goStep(6)">7. Preview</div>
+   </div>
+  </aside>
+
+  <main class="panel">
+   <div id="progressText" class="muted">Step 1 of 7</div>
+   <div style="height:6px;background:#eee;margin:12px 0 25px;border-radius:10px">
+    <div id="progress" style="height:6px;width:14.28%;background:#635bdb;border-radius:10px"></div>
+   </div>
+
+   <!-- STEP 1 -->
+   <section class="page active">
+    <h2>Select Template</h2>
+    <p class="muted">Your selected design is automatically loaded from the gallery.</p>
+
+    <div class="field">
+     <label>Event Category</label>
+     <select id="category"></select>
+    </div>
+
+    <div class="field">
+     <label>Template Design</label>
+     <select id="template"></select>
+    </div>
+
+    <div class="notice" id="templateInfo"></div>
+    <a id="viewDesign" class="btn secondary" target="_blank" rel="noopener">Preview Original Design</a>
+   </section>
+
+   <!-- STEP 2 -->
+   <section class="page">
+    <h2>Event Details</h2>
+    <div class="field">
+     <label>Event Name *</label>
+     <input id="eventName" placeholder="Enter event name">
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Event Type *</label>
+      <select id="format">
+       <option value="">Select type</option>
+       <option>In-person</option>
+       <option>Virtual</option>
+       <option>Hybrid</option>
+      </select>
+     </div>
+     <div class="field">
+      <label>Organizer</label>
+      <input id="organizer" placeholder="Organization name">
+     </div>
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Start Date *</label>
+      <input type="date" id="startDate">
+     </div>
+     <div class="field">
+      <label>End Date *</label>
+      <input type="date" id="endDate">
+     </div>
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Start Time</label>
+      <input type="time" id="startTime">
+     </div>
+     <div class="field">
+      <label>End Time</label>
+      <input type="time" id="endTime">
+     </div>
+    </div>
+    <div class="field">
+     <label>Venue / Meeting Link</label>
+     <input id="venue" placeholder="Location or online meeting link">
+    </div>
+    <div class="field">
+     <label>Event Description *</label>
+     <textarea id="description" placeholder="Describe your event"></textarea>
+    </div>
+   </section>
+
+   <!-- STEP 3 -->
+   <section class="page">
+    <h2>Branding & Design</h2>
+    <p class="muted">Customize the event brand colors and upload images.</p>
+    <div class="two">
+     <div class="field">
+      <label>Primary Color</label>
+      <input type="color" id="primaryColor" value="#635bdb">
+     </div>
+     <div class="field">
+      <label>Banner Color</label>
+      <input type="color" id="bannerColor" value="#292442">
+     </div>
+    </div>
+    <div class="field">
+     <label>Event Logo</label>
+     <input type="file" id="logo" accept="image/*">
+    </div>
+    <div class="field">
+     <label>Event Banner</label>
+     <input type="file" id="banner" accept="image/*">
+    </div>
+    <p class="small">Images are stored in this browser's draft. Use images under 1 MB.</p>
+   </section>
+
+   <!-- STEP 4 -->
+   <section class="page">
+    <h2>Event Agenda</h2>
+    <div class="field">
+     <label>Session Title</label>
+     <input id="sessionTitle" placeholder="Opening ceremony">
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Session Date</label>
+      <input type="date" id="sessionDate">
+     </div>
+     <div class="field">
+      <label>Session Time</label>
+      <input type="time" id="sessionTime">
+     </div>
+    </div>
+    <div class="field">
+     <label>Description</label>
+     <input id="sessionDescription" placeholder="Session details">
+    </div>
+    <button class="btn secondary" onclick="addSession()">+ Add Session</button>
+    <div id="sessionList"></div>
+   </section>
+
+   <!-- STEP 5 -->
+   <section class="page">
+    <h2>Speakers</h2>
+    <div class="field">
+     <label>Speaker Name</label>
+     <input id="speakerName" placeholder="Enter speaker name">
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Designation</label>
+      <input id="speakerRole" placeholder="Professor / CEO">
+     </div>
+     <div class="field">
+      <label>Organization</label>
+      <input id="speakerOrg" placeholder="Company name">
+     </div>
+    </div>
+    <div class="field">
+     <label>Speaker Bio</label>
+     <textarea id="speakerBio" placeholder="About the speaker"></textarea>
+    </div>
+    <button class="btn secondary" onclick="addSpeaker()">+ Add Speaker</button>
+    <div id="speakerList"></div>
+   </section>
+
+   <!-- STEP 6 -->
+   <section class="page">
+    <h2>Tickets & Registration</h2>
+    <div class="field">
+     <label>Registration Type</label>
+     <select id="ticketType">
+      <option>Free</option>
+      <option>Paid</option>
+      <option>Invitation Only</option>
+     </select>
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Ticket Name</label>
+      <input id="ticketName" value="General Admission">
+     </div>
+     <div class="field">
+      <label>Price (₹)</label>
+      <input type="number" id="ticketPrice" min="0" value="0">
+     </div>
+    </div>
+    <div class="two">
+     <div class="field">
+      <label>Maximum Attendees</label>
+      <input type="number" id="capacity" min="1" placeholder="100">
+     </div>
+     <div class="field">
+      <label>Registration Deadline</label>
+      <input type="date" id="deadline">
+     </div>
+    </div>
+   </section>
+
+   <!-- STEP 7 -->
+   <section class="page">
+    <h2>Event Preview</h2>
+    <p class="muted">Review your event details before saving.</p>
+    <div class="preview">
+     <div class="cover" id="cover">
+      <small id="pCategory">ARAM EVENTS</small>
+      <h1 id="pName">Your Event Name</h1>
+      <p id="pDate">Event date</p>
+     </div>
+     <div class="preview-content">
+      <h3>About the Event</h3>
+      <p id="pDescription" class="muted"></p>
+      <div class="preview-box"><b>Venue:</b> <span id="pVenue"></span></div>
+      <div class="preview-box"><b>Organizer:</b> <span id="pOrganizer"></span></div>
+      <h3>Agenda</h3>
+      <div id="pAgenda"></div>
+      <h3>Speakers</h3>
+      <div id="pSpeakers"></div>
+      <h3>Tickets</h3>
+      <div id="pTicket" class="preview-box"></div>
+     </div>
+    </div>
+
+    <div class="field">
+     <label><input type="checkbox" id="confirm">
+      I confirm that the event details are correct.
+     </label>
+    </div>
+    <button class="btn" onclick="saveEvent()">Save Event</button>
+    <div id="message" class="notice hidden"></div>
+    <p class="small">This demo saves locally in your browser. Online publishing and real registration require a backend and hosting.</p>
+   </section>
+
+   <div class="toolbar" id="toolbar">
+    <button class="btn white" id="previous" onclick="move(-1)" disabled>← Previous</button>
+    <button class="btn" id="next" onclick="move(1)">Continue →</button>
+   </div>
+  </main>
+ </div>
+</div>
+
+<script>
+const catalog = {
+ "art-photos":[
+  ["01-editorial.html","Editorial"],
+  ["02-modern-grid.html","Modern Grid"],
+  ["03-dark-stage.html","Dark Stage"],
+  ["04-bold-poster.html","Bold Poster"],
+  ["05-minimal.html","Minimal"]
+ ],
+ "automotive":[
+  ["01-editorial.html","Editorial"],
+  ["02-modern-grid.html","Modern Grid"],
+  ["03-dark-stage.html","Dark Stage"],
+  ["04-bold-poster.html","Bold Poster"],
+  ["05-minimal.html","Minimal"]
+ ],
+ "business":[
+  ["01-editorial.html","Editorial"],
+  ["02-dashboard.html","Dashboard"],
+  ["03-dark-premium.html","Dark Premium"],
+  ["04-kinetic.html","Kinetic"],
+  ["05-warm-cards.html","Warm Cards"]
+ ],
+ "Career":[
+  ["01-professional.html","Professional"],
+  ["02-modern-career.html","Modern Career"],
+  ["03-dark-networking.html","Dark Networking"],
+  ["04-creative-jobs.html","Creative Jobs"],
+  ["05-minimal-conference.html","Minimal Conference"]
+ ],
+ "data-analytics":[
+  ["01-data-summit.html","Data Summit"],
+  ["02-analytics-dashboard.html","Analytics Dashboard"],
+  ["03-dark-tech.html","Dark Tech"],
+  ["04-data-innovation.html","Data Innovation"],
+  ["05-minimal-insights.html","Minimal Insights"]
+ ]
+};
+
+const labels={
+ "art-photos":"Art & Photos",
+ "automotive":"Automotive",
+ "business":"Business",
+ "Career":"Career",
+ "data-analytics":"Data Analytics"
+};
+
+const $=id=>document.getElementById(id);
+let step=0;
+let sessions=[];
+let speakers=[];
+let logoData="";
+let bannerData="";
+
+const pages=[...document.querySelectorAll(".page")];
+const stepItems=[...document.querySelectorAll(".step")];
+
+function initialize(){
+ const params=new URLSearchParams(location.search);
+ const requestedCategory=params.get("category");
+ const requestedTemplate=params.get("template");
+
+ const draft=JSON.parse(localStorage.getItem("aramEventDraft")||"null");
+
+ const category =
+  catalog[requestedCategory] ? requestedCategory :
+  (draft && catalog[draft.category] ? draft.category : "art-photos");
+
+ $("category").innerHTML=Object.keys(catalog)
+  .map(key=>`<option value="${key}">${labels[key]}</option>`)
+  .join("");
+
+ $("category").value=category;
+ fillTemplates(requestedTemplate || (draft && draft.template));
+
+ if(draft){
+  const fields=[
+   "eventName","format","organizer","startDate","endDate",
+   "startTime","endTime","venue","description",
+   "primaryColor","bannerColor","ticketType","ticketName",
+   "ticketPrice","capacity","deadline"
+  ];
+
+  fields.forEach(id=>{
+   if(draft[id]!==undefined) $(id).value=draft[id];
+  });
+
+  sessions=draft.sessions||[];
+  speakers=draft.speakers||[];
+  logoData=draft.logo||"";
+  bannerData=draft.banner||"";
+
+  renderSessions();
+  renderSpeakers();
+ }
+
+ updateSelection();
+ updateWizard();
+}
+
+function fillTemplates(preferred){
+ const category=$("category").value;
+ const items=catalog[category];
+
+ $("template").innerHTML=items.map(item=>
+  `<option value="${item[0]}">${item[1]}</option>`
+ ).join("");
+
+ if(preferred && items.some(item=>item[0]===preferred)){
+  $("template").value=preferred;
+ }
+
+ updateSelection();
+}
+
+function updateSelection(){
+ const category=$("category").value;
+ const file=$("template").value;
+ const item=catalog[category].find(x=>x[0]===file);
+
+ $("templateInfo").textContent=
+  "Selected: "+labels[category]+" / "+(item?item[1]:"");
+
+ $("viewDesign").href="../"+category+"/"+file;
+}
+
+$("category").addEventListener("change",()=>fillTemplates());
+$("template").addEventListener("change",updateSelection);
+
+function updateWizard(){
+ pages.forEach((page,i)=>{
+  page.classList.toggle("active",i===step);
+ });
+
+ stepItems.forEach((item,i)=>{
+  item.classList.toggle("active",i===step);
+  item.classList.toggle("done",i<step);
+ });
+
+ $("progressText").textContent=`Step ${step+1} of 7`;
+ $("progress").style.width=((step+1)/7*100)+"%";
+ $("previous").disabled=step===0;
+ $("next").classList.toggle("hidden",step===6);
+ $("toolbar").classList.toggle("hidden",step===6);
+
+ if(step===6) makePreview();
+}
+
+function goStep(target){
+ if(target>step && !validate()) return;
+ step=target;
+ updateWizard();
+ saveDraftQuiet();
+}
+
+function move(direction){
+ if(direction>0 && !validate()) return;
+ step=Math.max(0,Math.min(6,step+direction));
+ updateWizard();
+ saveDraftQuiet();
+}
+
+function validate(){
+ if(step===0 && !$("template").value){
+  alert("Please select a template.");
+  return false;
+ }
+
+ if(step===1){
+  const required=["eventName","format","startDate","endDate","description"];
+
+  for(const id of required){
+   if(!$(id).value.trim()){
+    alert("Please complete all required event details.");
+    $(id).focus();
+    return false;
+   }
+  }
+
+  if($("endDate").value<$("startDate").value){
+   alert("End date cannot be before start date.");
+   return false;
+  }
+ }
+
+ return true;
+}
+
+function getData(){
+ return {
+  category:$("category").value,
+  template:$("template").value,
+  eventName:$("eventName").value,
+  format:$("format").value,
+  organizer:$("organizer").value,
+  startDate:$("startDate").value,
+  endDate:$("endDate").value,
+  startTime:$("startTime").value,
+  endTime:$("endTime").value,
+  venue:$("venue").value,
+  description:$("description").value,
+  primaryColor:$("primaryColor").value,
+  bannerColor:$("bannerColor").value,
+  sessions,
+  speakers,
+  ticketType:$("ticketType").value,
+  ticketName:$("ticketName").value,
+  ticketPrice:$("ticketPrice").value,
+  capacity:$("capacity").value,
+  deadline:$("deadline").value,
+  logo:logoData,
+  banner:bannerData
+ };
+}
+
+function saveDraftQuiet(){
+ try{
+  localStorage.setItem("aramEventDraft",JSON.stringify(getData()));
+ }catch(error){
+  console.warn("Draft storage limit reached.",error);
+ }
+}
+
+function saveDraft(){
+ try{
+  localStorage.setItem("aramEventDraft",JSON.stringify(getData()));
+  alert("Draft saved successfully in this browser.");
+ }catch(error){
+  alert("Unable to save. Try smaller images.");
+ }
+}
+
+function addSession(){
+ const title=$("sessionTitle").value.trim();
+
+ if(!title){
+  alert("Enter a session title.");
+  return;
+ }
+
+ sessions.push({
+  title,
+  date:$("sessionDate").value,
+  time:$("sessionTime").value,
+  description:$("sessionDescription").value
+ });
+
+ ["sessionTitle","sessionDate","sessionTime","sessionDescription"]
+ .forEach(id=>$(id).value="");
+
+ renderSessions();
+ saveDraftQuiet();
+}
+
+function renderSessions(){
+ const list=$("sessionList");
+ list.innerHTML="";
+
+ sessions.forEach((session,index)=>{
+  const div=document.createElement("div");
+  div.className="item";
+
+  const text=document.createElement("span");
+  text.textContent=[
+   session.title,session.date,session.time,session.description
+  ].filter(Boolean).join(" · ");
+
+  const remove=document.createElement("button");
+  remove.className="btn white";
+  remove.textContent="Remove";
+
+  remove.onclick=()=>{
+   sessions.splice(index,1);
+   renderSessions();
+   saveDraftQuiet();
+  };
+
+  div.append(text,remove);
+  list.append(div);
+ });
+}
+
+function addSpeaker(){
+ const name=$("speakerName").value.trim();
+
+ if(!name){
+  alert("Enter speaker name.");
+  return;
+ }
+
+ speakers.push({
+  name,
+  role:$("speakerRole").value,
+  organization:$("speakerOrg").value,
+  bio:$("speakerBio").value
+ });
+
+ ["speakerName","speakerRole","speakerOrg","speakerBio"]
+ .forEach(id=>$(id).value="");
+
+ renderSpeakers();
+ saveDraftQuiet();
+}
+
+function renderSpeakers(){
+ const list=$("speakerList");
+ list.innerHTML="";
+
+ speakers.forEach((speaker,index)=>{
+  const div=document.createElement("div");
+  div.className="item";
+
+  const text=document.createElement("span");
+  text.textContent=[
+   speaker.name,speaker.role,speaker.organization
+  ].filter(Boolean).join(" · ");
+
+  const remove=document.createElement("button");
+  remove.className="btn white";
+  remove.textContent="Remove";
+
+  remove.onclick=()=>{
+   speakers.splice(index,1);
+   renderSpeakers();
+   saveDraftQuiet();
+  };
+
+  div.append(text,remove);
+  list.append(div);
+ });
+}
+
+function loadImage(input,type){
+ const file=input.files[0];
+ if(!file)return;
+
+ if(file.size>1024*1024){
+  alert("Please select an image smaller than 1 MB.");
+  input.value="";
+  return;
+ }
+
+ const reader=new FileReader();
+
+ reader.onload=()=>{
+  if(type==="logo")logoData=reader.result;
+  else bannerData=reader.result;
+
+  saveDraftQuiet();
+ };
+
+ reader.readAsDataURL(file);
+}
+
+$("logo").addEventListener("change",()=>loadImage($("logo"),"logo"));
+$("banner").addEventListener("change",()=>loadImage($("banner"),"banner"));
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,char=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[char]));
+}
+
+function makePreview(){
+ const d=getData();
+ const selected=catalog[d.category].find(x=>x[0]===d.template);
+
+ $("pCategory").textContent=
+  labels[d.category]+" · "+(selected?selected[1]:"");
+
+ $("pName").textContent=d.eventName||"Your Event Name";
+
+ $("pDate").textContent=[
+  d.startDate,d.endDate,d.startTime,d.endTime
+ ].filter(Boolean).join(" | ")||"Event Date";
+
+ $("pDescription").textContent=d.description||"No description added.";
+ $("pVenue").textContent=d.venue||"Not specified";
+ $("pOrganizer").textContent=d.organizer||"Not specified";
+
+ $("cover").style.backgroundColor=d.bannerColor;
+ $("cover").style.borderTop="7px solid "+d.primaryColor;
+
+ $("cover").style.backgroundImage=bannerData
+  ? `linear-gradient(#0005,#0005),url("${bannerData}")`
+  : "none";
+
+ $("cover").style.backgroundSize="cover";
+ $("cover").style.backgroundPosition="center";
+
+ $("pAgenda").innerHTML=sessions.length
+  ?sessions.map(s=>`<div class="preview-box"><b>${escapeHTML(s.title)}</b><br>${escapeHTML([s.date,s.time,s.description].filter(Boolean).join(" · "))}</div>`).join("")
+  :"No sessions added.";
+
+ $("pSpeakers").innerHTML=speakers.length
+  ?speakers.map(s=>`<div class="preview-box"><b>${escapeHTML(s.name)}</b><br>${escapeHTML([s.role,s.organization,s.bio].filter(Boolean).join(" · "))}</div>`).join("")
+  :"No speakers added.";
+
+ $("pTicket").textContent=d.ticketType==="Paid"
+  ?`${d.ticketName} · ₹${d.ticketPrice}`
+  :d.ticketType;
+}
+
+function saveEvent(){
+ if(!$("confirm").checked){
+  alert("Please confirm the event details.");
+  return;
+ }
+
+ const d=getData();
+
+ if(!d.eventName || !d.startDate || !d.endDate || !d.description){
+  alert("Complete the required event details.");
+  return;
+ }
+
+ const event={
+  ...d,
+  id:"ARAM-"+Date.now(),
+  status:"Saved locally",
+  createdAt:new Date().toISOString()
+ };
+
+ try{
+  const existing=JSON.parse(localStorage.getItem("aramEvents")||"[]");
+  existing.push(event);
+  localStorage.setItem("aramEvents",JSON.stringify(existing));
+
+  $("message").classList.remove("hidden");
+  $("message").textContent="Event saved successfully! Event ID: "+event.id;
+ }catch(error){
+  alert("Unable to save. Browser storage may be full.");
+ }
+}
+
+initialize();
+</script>
+</body>
+</html>
